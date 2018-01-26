@@ -1,7 +1,7 @@
 Snake = {}
 
 local food = {}
-local scl = 10
+local scl = 20
 
 function Snake:Load(x, y)
     Snake.x = x
@@ -35,7 +35,6 @@ function Snake:Update(dt)
     if Snake.y > HAUTEUR then Snake.y = 0 end
     if Snake.x < 0 then Snake.x = LARGEUR end
     if Snake.y < 0 then Snake.y = HAUTEUR end
-    print(love.timer.getFPS())
 end
 
 function Snake:Draw()
@@ -82,6 +81,7 @@ end
 function Snake:PickLocation()
     local cols = math.floor(LARGEUR / scl)
     local rows = math.floor(HAUTEUR / scl)
+    
     food = {x=math.random(1, cols-1) * scl, y=math.random(1, rows-1) * scl}
 end
 

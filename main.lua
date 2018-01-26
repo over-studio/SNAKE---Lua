@@ -1,16 +1,23 @@
 require("constants")
 
+local timer = 0
+
 local snake = require("Snake")
 
 function love.load()
     snake:Load(LARGEUR/2, HAUTEUR/2)
 end
-local timer = 0
+
 function love.update(dt)
-    snake.Death()
-    snake:Update(dt)
-    if snake:Eat() then
-        snake:PickLocation()
+    timer = timer + dt
+    if timer > 0.1 then
+        snake.Death()
+        snake:Update(dt)
+        if snake:Eat() then
+            snake:PickLocation()
+        end
+
+        timer = 0
     end
 end
 
