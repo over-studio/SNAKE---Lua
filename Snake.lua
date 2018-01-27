@@ -1,7 +1,9 @@
 Snake = {}
 
 local food = {}
-local scl = 20
+local scl = 15 
+local oldXSpeed
+local oldYSpeed
 
 function Snake:Load(x, y)
     Snake.x = x
@@ -11,11 +13,21 @@ function Snake:Load(x, y)
     Snake.head = nil
     Snake.tail = {}
     Snake.counter = 0
+    Snake.pasDetour = 0
+    Snake.oldDir = 2
+    Snake.direction = 0
 
     Snake:PickLocation()
 end
 
-function Snake:dir(x, y)
+function Snake:dir(x, y, newDir, pas)
+    Snake.oldDir = Snake.direction
+    Snake.direction = newDir
+    Snake.pasDetour = pas
+
+    oldXSpeed = Snake.xspeed
+    oldYSpeed = Snake.yspeed
+
     Snake.xspeed = x
     Snake.yspeed = y
 end
@@ -27,6 +39,22 @@ function Snake:Update(dt)
         end
     end
     Snake.tail[Snake.counter] = {x=Snake.x, y=Snake.y}
+    
+    if Snake.oldDir == Snake.direction * -1 then 
+        if Snake.pasDetour > 0 then
+            if math.abs(Snake.direction) == 2 then
+                Snake.xspeed = 0
+                Snake.yspeed = 1
+            elseif math.abs(Snake.direction) == 3 then
+                Snake.xspeed = 1
+                Snake.yspeed = 0
+            end
+        else
+            Snake.xspeed = oldXSpeed * -1
+            Snake.yspeed = oldYSpeed * -1
+        end
+        Snake.pasDetour = Snake.pasDetour - 1
+    end
 
     Snake.x = Snake.x + Snake.xspeed * scl
     Snake.y = Snake.y + Snake.yspeed * scl
@@ -38,6 +66,7 @@ function Snake:Update(dt)
 end
 
 function Snake:Draw()
+    -- tail
     love.graphics.setColor(255, 255, 255)
     for i=2, #Snake.tail do
         love.graphics.rectangle("fill", Snake.tail[i].x, Snake.tail[i].y, scl-1, scl-1)
@@ -47,9 +76,11 @@ function Snake:Draw()
         love.graphics.rectangle("fill", Snake.tail[1].x, Snake.tail[1].y, scl-1, scl-1)
     end
 
+    -- snake
     love.graphics.setColor(255, 0, 0)
     love.graphics.rectangle("fill", Snake.x, Snake.y, scl-1, scl-1)
 
+    -- food
     love.graphics.setColor(255, 0, 255)
     love.graphics.rectangle("fill", food.x, food.y, scl-1, scl-1)
 end
